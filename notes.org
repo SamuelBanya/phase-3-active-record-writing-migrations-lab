@@ -1,0 +1,110 @@
+These are the commands I used in the process of doing this migration:
+#+begin_src bash
+bundle exec rake db:migrate
+#+end_src
+
+Related output:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-active-record-writing-migrations-lab $ bundle exec rake db:migrate
+== 1 CreateStudents: migrating ================================================
+-- create_table(:students)
+   -> 0.0013s
+== 1 CreateStudents: migrated (0.0013s) =======================================
+#+end_src
+
+I then checked the status of the migration with the 'db:migrate:status' command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-active-record-writing-migrations-lab $ bundle exec rake db:migrate:status
+
+database: db/development.sqlite3
+
+ Status   Migration ID    Migration Name
+--------------------------------------------------
+   up     001             Create students
+#+end_src
+
+I then created a second file called 'db/migrate/02_add_grade_and_birthdate_to_students.rb', and added the following contents to it:
+
+NOTE: I had to look in the solution branch to figure out that the version needs to be specified for 'ActiveRecord::Migration' aka 'ActiveRecord::Migration[6.1]' in this scenario:
+- https://github.com/learn-co-curriculum/phase-3-active-record-writing-migrations-lab/blob/solution/db/migrate/02_add_grade_and_birthdate_to_students.rb
+
+Related modified code I used:
+#+begin_src ruby
+class AddGradeAndBirthdateToStudents < ActiveRecord::Migration[6.1]
+  def change
+    # Add a grade column that is an integer,
+    add_column :students, :grade, :integer
+
+    # and a birthdate column that is a string.
+    add_column :students, :birthdate, :string
+  end
+end
+
+#+end_src
+
+I then ran the 'bundle exec rake db:migrate' command to start the migration:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-active-record-writing-migrations-lab $ bundle exec rake db:migrate
+
+== 2 AddGradeAndBirthdateToStudents: migrating ================================
+-- add_column(:students, :grade, :integer)
+   -> 0.0012s
+-- add_column(:students, :birthdate, :string)
+   -> 0.0005s
+== 2 AddGradeAndBirthdateToStudents: migrated (0.0018s) =======================
+#+end_src
+
+I then checked its status with the 'bundle exec rake db:migrate:status' command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-active-record-writing-migrations-lab $ bundle exec rake db:migrate:status
+
+database: db/development.sqlite3
+
+ Status   Migration ID    Migration Name
+--------------------------------------------------
+   up     001             Create students
+   up     002             Add grade and birthdate to students
+#+end_src
+
+I then checked the 'db/schema.rb' file to ensure that the schema was updated with the appropriate columns I added via the previous two migrations.
+
+I then created the '03_change_datatype_for_birthdate.rb' since the lab had the pretend scenario that the 'birthdate' column needed to be changed to a 'datetime' datatype format via a third migration effort.
+
+I then consulted this part of the Docs:
+- https://guides.rubyonrails.org/active_record_migrations.html
+
+I then changed the file with these contents:
+#+begin_src ruby
+class ChangeDatatypeForBirthdate < ActiveRecord::Migration[6.1]
+  def change
+    # Syntax:
+    # change_column :table_name, :column_name, :type
+    change_column :students, :birthdate, :datetime
+  end
+end
+#+end_src
+
+I then ran the 'bundle exec rake db:migrate' command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-active-record-writing-migrations-lab $ bundle exec rake db:migrate
+
+== 3 ChangeDatatypeForBirthdate: migrating ====================================
+-- change_column(:students, :birthdate, :datetime)
+   -> 0.0036s
+== 3 ChangeDatatypeForBirthdate: migrated (0.0036s) ===========================
+#+end_src
+
+I then checked the status with 'bundle exec rake db:migrate:status':
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-active-record-writing-migrations-lab $ bundle exec rake db:migrate:status
+
+database: db/development.sqlite3
+
+ Status   Migration ID    Migration Name
+--------------------------------------------------
+   up     001             Create students
+   up     002             Add grade and birthdate to students
+   up     003             Change datatype for birthdate
+#+end_src
+
+I then checked the related schema in 'db/schema.rb' file accordingly to make sure that the 'birthdate' column was updated to the 'datetime' data type accordingly.
